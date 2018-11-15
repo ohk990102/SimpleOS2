@@ -1,5 +1,7 @@
 #include <stdio.h>
+#include <kernel/tty.h>
 
 void kernel_main(void) {
-    while(1);
+    terminal_initialize();
+    printf("[*] SimpleOS2 Loading...");
 }

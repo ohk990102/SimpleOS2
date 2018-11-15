@@ -38,7 +38,7 @@ multiboot_magic:
     /*  Header length. */
     .long   multiboot_header_end - multiboot_header
     /*  checksum */
-    .long   0x100000000 -(MULTIBOOT2_HEADER_MAGIC + MULTIBOOT_ARCHITECTURE_I386 + (multiboot_header_end - multiboot_header))
+    .long   -(MULTIBOOT2_HEADER_MAGIC + MULTIBOOT_ARCHITECTURE_I386 + (multiboot_header_end - multiboot_header))
 multiboot_magic_end:
     .short MULTIBOOT_HEADER_TAG_END
     .short 0

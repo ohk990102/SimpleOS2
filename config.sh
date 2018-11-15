@@ -4,9 +4,10 @@ PROJECTS="libc kernel"
 export MAKE=${MAKE:-make}
 export HOST=${HOST:-$(./default-host.sh)}
  
-export AR=ar
-export AS=as
-export CC=gcc
+export TOOLCHAIN_PATH="$PWD/toolchain/bin"
+export AR=$TOOLCHAIN_PATH/${HOST}-ar
+export AS=$TOOLCHAIN_PATH/${HOST}-as
+export CC=$TOOLCHAIN_PATH/${HOST}-gcc
  
 export PREFIX=/usr
 export EXEC_PREFIX=$PREFIX
