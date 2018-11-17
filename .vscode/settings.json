@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "gdt.h": "c",
+        "vga.h": "c"
+    },
+    "files.eol": "\n"
+}
