@@ -28,7 +28,7 @@ multiboot_magic_end:
     .long 8
 multiboot_header_end:
 .section .text
-.globl multiboot_entry
+.global multiboot_entry
 multiboot_entry:
     /*  Initialize the stack pointer. */
     movl    $(stack + STACK_SIZE), %esp
