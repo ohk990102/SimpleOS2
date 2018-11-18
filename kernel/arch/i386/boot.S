@@ -75,6 +75,13 @@ multiboot_entry:
     jmp     ecx
 4:
     # now in higher address, feeling good
+	# Unmap the identity mapping as it is now unnecessary. 
+	mov     dword ptr boot_page_directory, 0
+
+	# Reload crc3 to force a TLB flush so the changes to take effect.
+	mov     ecx, cr3
+    mov     cr3, ecx
+
     mov     esp, offset (stack + STACK_SIZE)
     push    ebx
     push    eax
