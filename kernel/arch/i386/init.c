@@ -1,9 +1,9 @@
 #include <kernel/init.h>
 #include <arch/i386/gdt.h>
+#include <arch/i386/utility.h>
 
 uint64_t gdt[3];
-// defined in arch/i386/utility.S
-void set_gdt(void * gdt_base_addr, unsigned short gdt_length);
+
 void init_gdt() {
     gdt[0] = create_descriptor(0, 0, 0);
     gdt[1] = create_descriptor(0, 0x000FFFFF, (GDT_CODE_PL0));
