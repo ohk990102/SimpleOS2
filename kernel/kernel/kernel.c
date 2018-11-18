@@ -6,13 +6,13 @@
 
 void kernel_main(unsigned long magic, void * addr) {
     terminal_initialize();
-    printf("[*] SimpleOS2 Loading...");
+    printf("[*] SimpleOS2 Loading...\n");
     if(magic != MULTIBOOT2_BOOTLOADER_MAGIC) {
-        printf("[!] Multiboot2 Bootloader Magic invalid");
+        printf("[!] Multiboot2 Bootloader Magic invalid\n");
         abort();
     }    
     if(((unsigned long) addr) & 7) {
-        printf("[!] Multiboot2 Bootloader Information Addr not aligned");
+        printf("[!] Multiboot2 Bootloader Information Addr not aligned\n");
         abort();
     }
     /**
@@ -25,7 +25,7 @@ void kernel_main(unsigned long magic, void * addr) {
     **/
 
     init(magic, addr);
-    printf("[+] system init complete");
+    printf("[+] system init complete\n");
 
 
 }
