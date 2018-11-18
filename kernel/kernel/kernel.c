@@ -24,7 +24,7 @@ void kernel_main(unsigned long magic, void * addr) {
     }
     **/
 
-    init(magic, addr);
+    init(addr);
     printf("[+] system init complete\n");
 
 

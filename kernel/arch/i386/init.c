@@ -11,6 +11,6 @@ void init_gdt() {
     set_gdt(gdt, sizeof(gdt));
 }
 
-void init(unsigned long magic, void * addr) {
+void init(void * addr) {
     init_gdt();
 }
