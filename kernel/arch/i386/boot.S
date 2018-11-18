@@ -32,9 +32,9 @@ multiboot_header_end:
 multiboot_entry:
     /*  Initialize the stack pointer. */
     movl    $(stack + STACK_SIZE), %esp
-    call    _init
     pushl   %ebx
     pushl   %eax
+    call    _init
     call    kernel_main
 loop:
     hlt
