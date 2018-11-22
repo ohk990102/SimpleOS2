@@ -37,6 +37,7 @@ multiboot_header_end:
 .section .text
 .global multiboot_entry
 multiboot_entry:
+    cli
     /* This is physical address */
     /* 4KB paging */
     /* Base address is 0xC0000000 */

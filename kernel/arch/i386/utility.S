@@ -6,9 +6,13 @@
 gdtr:
     .short 0
     .long 0
+idtr:
+    .short 0
+    .long 0
 .section .text
-.global set_gdt
+.global set_gdt, set_idt
 .type set_gdt, @function
+.type set_idt, @function
 
 set_gdt:
     mov eax, [esp+4]
@@ -26,3 +30,12 @@ flush_gdt:
     mov ss, ax
     ret
 
+
+set_idt:
+    mov eax, [esp+4]
+    mov [idtr+2], eax
+    mov ax, [esp+8]
+    mov [idtr], ax
+    lidt [idtr]
+    sti
+    ret
