@@ -1,7 +1,7 @@
 #define ASM_FILE        1
 .intel_syntax noprefix
 
-.extern default_interrupt_handler
+.extern default_isr_handler
 .section .text
 default_isr_common_stub:
 	pusha # Pushes edi,esi,ebp,esp,ebx,edx,ecx,eax
@@ -14,7 +14,7 @@ default_isr_common_stub:
 	mov gs, ax
 	
     # 2. Call C handler
-	call default_interrupt_handler
+	call default_isr_handler
 	
     # 3. Restore state
 	pop eax

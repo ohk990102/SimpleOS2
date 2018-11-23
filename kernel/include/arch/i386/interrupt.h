@@ -1,5 +1,5 @@
-#ifndef ISR_HEADER
-#define ISR_HEADER 1
+#ifndef INTERRUPT_HEADER
+#define INTERRUPT_HEADER 1
 
 
 extern void isr0();
@@ -35,6 +35,22 @@ extern void isr29();
 extern void isr30();
 extern void isr31();
 
+extern void irq0();
+extern void irq1();
+extern void irq2();
+extern void irq3();
+extern void irq4();
+extern void irq5();
+extern void irq6();
+extern void irq7();
+extern void irq8();
+extern void irq9();
+extern void irq10();
+extern void irq11();
+extern void irq12();
+extern void irq13();
+extern void irq14();
+extern void irq15();
 
 typedef struct {
    uint32_t ds; /* Data segment selector */
@@ -43,7 +59,7 @@ typedef struct {
    uint32_t eip, cs, eflags, useresp, ss; /* Pushed by the processor automatically */
 } registers_t;
 
-void default_interrupt_handler(int r);
+void default_isr_handler(int r);
 
 #define GET_REGISTER(r) ((registers_t *) &(r))
 #endif

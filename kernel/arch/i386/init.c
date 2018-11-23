@@ -2,7 +2,7 @@
 #include <kernel/init.h>
 #include <arch/i386/gdt.h>
 #include <arch/i386/idt.h>
-#include <arch/i386/isr.h>
+#include <arch/i386/interrupt.h>
 
 uint64_t gdt[5];
 uint64_t idt[256];
@@ -50,7 +50,24 @@ static void init_idt() {
     idt[29] = create_interrupt_descriptor(isr29, 0x08, IDT_INTERRUPT_GATE);
     idt[30] = create_interrupt_descriptor(isr30, 0x08, IDT_INTERRUPT_GATE);
     idt[31] = create_interrupt_descriptor(isr31, 0x08, IDT_INTERRUPT_GATE);
-    set_idt(idt, 256 * 8 - 1);
+
+    idt[32] = create_interrupt_descriptor(irq0, 0x08, IDT_INTERRUPT_GATE);
+    idt[33] = create_interrupt_descriptor(irq1, 0x08, IDT_INTERRUPT_GATE);
+    idt[34] = create_interrupt_descriptor(irq2, 0x08, IDT_INTERRUPT_GATE);
+    idt[35] = create_interrupt_descriptor(irq3, 0x08, IDT_INTERRUPT_GATE);
+    idt[36] = create_interrupt_descriptor(irq4, 0x08, IDT_INTERRUPT_GATE);
+    idt[37] = create_interrupt_descriptor(irq5, 0x08, IDT_INTERRUPT_GATE);
+    idt[38] = create_interrupt_descriptor(irq6, 0x08, IDT_INTERRUPT_GATE);
+    idt[39] = create_interrupt_descriptor(irq7, 0x08, IDT_INTERRUPT_GATE);
+    idt[40] = create_interrupt_descriptor(irq8, 0x08, IDT_INTERRUPT_GATE);
+    idt[41] = create_interrupt_descriptor(irq9, 0x08, IDT_INTERRUPT_GATE);
+    idt[42] = create_interrupt_descriptor(irq10, 0x08, IDT_INTERRUPT_GATE);
+    idt[43] = create_interrupt_descriptor(irq11, 0x08, IDT_INTERRUPT_GATE);
+    idt[44] = create_interrupt_descriptor(irq12, 0x08, IDT_INTERRUPT_GATE);
+    idt[45] = create_interrupt_descriptor(irq13, 0x08, IDT_INTERRUPT_GATE);
+    idt[46] = create_interrupt_descriptor(irq14, 0x08, IDT_INTERRUPT_GATE);
+    idt[47] = create_interrupt_descriptor(irq15, 0x08, IDT_INTERRUPT_GATE);
+    set_idt(idt, 32 * 8);
 }
 
 void init(void * addr) {

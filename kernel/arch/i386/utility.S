@@ -30,7 +30,6 @@ flush_gdt:
     mov ss, ax
     ret
 
-
 set_idt:
     mov eax, [esp+4]
     mov [idtr+2], eax
@@ -39,3 +38,4 @@ set_idt:
     lidt [idtr]
     sti
     ret
+
