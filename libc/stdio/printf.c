@@ -11,7 +11,38 @@ static bool print(const char* data, size_t length) {
 			return false;
 	return true;
 }
+static int printi(int i, int b, int sg, int letbase)
+{
+	int t, len = 0;
+	unsigned int u = i;
 
+	if (i == 0) {
+		putchar('0');
+		len++;
+	}
+
+	if (sg && b == 10 && i < 0) {
+		u = -i;
+		putchar('-');
+		len++;
+	}
+
+	char printi_buf[100];
+	int idx = 0;
+	while (u) {
+		t = u % b;
+		if( t >= 10 )
+			t += letbase - '0' - 10;
+		printi_buf[100-++idx] = t + '0';
+		u /= b;
+		len++;
+	}
+	if(!print(&printi_buf[100-idx], idx))
+		return -1;
+
+
+	return len;
+}
 int printf(const char* restrict format, ...) {
 	va_list parameters;
 	va_start(parameters, format);
@@ -61,7 +92,43 @@ int printf(const char* restrict format, ...) {
 			if (!print(str, len))
 				return -1;
 			written += len;
-		} else {
+		}
+		else if( *format == 'd' ) {
+			format++;
+			int i = va_arg(parameters, int);
+			int len = printi (i, 10, 1, 'a');
+			if(len == -1)
+				return -1;
+			written += len;
+			continue;
+		}
+		else if( *format == 'x' ) {
+			format++;
+			int i = va_arg(parameters, int);
+			int len = printi (i, 16, 1, 'a');
+			if(len == -1)
+				return -1;
+			written += len;
+			continue;
+		}
+		else if( *format == 'X' ) {
+			format++;
+			int i = va_arg(parameters, int);
+			int len = printi (i, 16, 1, 'A');
+			if(len == -1)
+				return -1;
+			written += len;
+			continue;
+		}
+		else if( *format == 'u' ) {
+			format++;
+			int i = va_arg(parameters, int);
+			int len = printi (i, 16, 1, 'a');
+			if(len == -1)
+				return -1;
+			written += len;
+			continue;
+		}else {
 			format = format_begun_at;
 			size_t len = strlen(format);
 			if (maxrem < len) {

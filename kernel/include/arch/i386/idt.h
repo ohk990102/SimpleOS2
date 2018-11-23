@@ -16,7 +16,7 @@
 
 uint64_t create_interrupt_descriptor(uint32_t offset, uint16_t selector, uint8_t flag);
 void set_idt(void * idt_base_addr, unsigned short idt_length);
-extern void default_isr();
+
 
 
 #endif
