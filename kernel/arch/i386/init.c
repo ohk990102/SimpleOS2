@@ -67,6 +67,9 @@ static void init_idt() {
     idt[45] = create_interrupt_descriptor(irq13, 0x08, IDT_INTERRUPT_GATE);
     idt[46] = create_interrupt_descriptor(irq14, 0x08, IDT_INTERRUPT_GATE);
     idt[47] = create_interrupt_descriptor(irq15, 0x08, IDT_INTERRUPT_GATE);
+
+    remap_pic();
+
     set_idt(idt, sizeof(idt) - 1);
 }
 
