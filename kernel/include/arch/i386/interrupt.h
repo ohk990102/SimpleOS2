@@ -1,6 +1,7 @@
 #ifndef INTERRUPT_HEADER
 #define INTERRUPT_HEADER 1
 
+#include <stdint.h>
 
 extern void isr0();
 extern void isr1();
@@ -35,31 +36,33 @@ extern void isr29();
 extern void isr30();
 extern void isr31();
 
-extern void irq0();
-extern void irq1();
-extern void irq2();
-extern void irq3();
-extern void irq4();
-extern void irq5();
-extern void irq6();
-extern void irq7();
-extern void irq8();
-extern void irq9();
-extern void irq10();
-extern void irq11();
-extern void irq12();
-extern void irq13();
-extern void irq14();
-extern void irq15();
+extern void isr_pic0();
+extern void isr_pic1();
+extern void isr_pic2();
+extern void isr_pic3();
+extern void isr_pic4();
+extern void isr_pic5();
+extern void isr_pic6();
+extern void isr_pic7();
+extern void isr_pic8();
+extern void isr_pic9();
+extern void isr_pic10();
+extern void isr_pic11();
+extern void isr_pic12();
+extern void isr_pic13();
+extern void isr_pic14();
+extern void isr_pic15();
 
-typedef struct {
+struct __attribute__((__packed__)) registers_t{
    uint32_t ds; /* Data segment selector */
    uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax; /* Pushed by pusha. */
    uint32_t int_no, err_code; /* Interrupt number and error code (if applicable) */
    uint32_t eip, cs, eflags, useresp, ss; /* Pushed by the processor automatically */
-} registers_t;
+};
 
-void default_isr_handler(int r);
+//void keyboard_handler(registers_t r);
+void default_exception_handler(struct registers_t * r);
+void default_interrupt_handler(struct registers_t * r);
 
-#define GET_REGISTER(r) ((registers_t *) &(r))
+//#define GET_REGISTER(r) ((registers_t *) &(r))
 #endif

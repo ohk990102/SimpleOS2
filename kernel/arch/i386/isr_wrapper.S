@@ -1,10 +1,10 @@
 #define ASM_FILE        1
 .intel_syntax noprefix
 
-.extern default_isr_handler
+.extern default_interrupt_handler, default_exception_handler, keyboard_handler
 .section .text
-default_isr_common_stub:
-	pusha # Pushes edi,esi,ebp,esp,ebx,edx,ecx,eax
+.macro interrupt_handler_stub handler_function
+    pusha # Pushes edi,esi,ebp,esp,ebx,edx,ecx,eax
 	mov ax, ds # Lower 16-bits of eax = ds.
 	push eax # save the data segment descriptor
 	mov ax, 0x10  # kernel data segment descriptor
@@ -12,29 +12,19 @@ default_isr_common_stub:
 	mov es, ax
 	mov fs, ax
 	mov gs, ax
-	
-    # 2. Call C handler
-	call default_isr_handler
-	
-    # 3. Restore state
-	pop eax
+    push esp
+    call \handler_function
+    pop esp
+    pop eax
 	mov ds, ax
 	mov es, ax
 	mov fs, ax
 	mov gs, ax
 	popa
 	add esp, 8 # Cleans up the pushed error code and pushed ISR number
-	sti
 	iret # pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP
-	
-# We don't get information about which interrupt was caller
-# when the handler is run, so we will need to have a different handler
-# for every interrupt.
-# Furthermore, some interrupts push an error code onto the stack but others
-# don't, so we will push a dummy error code for those which don't, so that
-# we have a consistent stack for all of them.
+.endm
 
-# First make the ISRs global
 .global isr0, isr1, isr2, isr3, isr4, isr5, isr6, isr7, isr8, isr9, isr10, isr11, isr12, isr13, isr14, isr15, isr16, isr17, isr18, isr19, isr20, isr21, isr22, isr23, isr24, isr25, isr26, isr27, isr28, isr29, isr30, isr31
 .type isr0, @function
 .type isr1, @function
@@ -70,219 +60,285 @@ default_isr_common_stub:
 .type isr31, @function
 # 0: Divide By Zero Exception
 isr0:
-    cli
     push  0
     push  0
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
 # 1: Debug Exception
 isr1:
-    cli
     push  0
     push  1
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
 # 2: Non Maskable Interrupt Exception
 isr2:
-    cli
     push  0
     push  2
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
 # 3: Int 3 Exception
 isr3:
-    cli
     push  0
     push  3
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
 # 4: INTO Exception
 isr4:
-    cli
     push  0
     push  4
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
 # 5: Out of Bounds Exception
 isr5:
-    cli
     push  0
     push  5
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
 # 6: Invalid Opcode Exception
 isr6:
-    cli
     push  0
     push  6
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
 # 7: Coprocessor Not Available Exception
 isr7:
-    cli
     push  0
     push  7
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
 # 8: Double Fault Exception (With Error Code!)
 isr8:
-    cli
     push  8
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
 # 9: Coprocessor Segment Overrun Exception
 isr9:
-    cli
     push  0
     push  9
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
 # 10: Bad TSS Exception (With Error Code!)
 isr10:
-    cli
     push  10
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
 # 11: Segment Not Present Exception (With Error Code!)
 isr11:
-    cli
     push  11
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
 # 12: Stack Fault Exception (With Error Code!)
 isr12:
-    cli
     push  12
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
 # 13: General Protection Fault Exception (With Error Code!)
 isr13:
-    cli
     push  13
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
 # 14: Page Fault Exception (With Error Code!)
 isr14:
-    cli
+    
     push  14
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
 # 15: Reserved Exception
 isr15:
-    cli
     push  0
     push  15
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
 # 16: Floating Point Exception
 isr16:
-    cli
     push  0
     push  16
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
 # 17: Alignment Check Exception
 isr17:
-    cli
     push  0
     push  17
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
 # 18: Machine Check Exception
 isr18:
-    cli
     push  0
     push  18
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
 # 19: Reserved
 isr19:
-    cli
     push  0
     push  19
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
 # 20: Reserved
 isr20:
-    cli
     push  0
     push  20
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
 # 21: Reserved
 isr21:
-    cli
     push  0
     push  21
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
 # 22: Reserved
 isr22:
-    cli
     push  0
     push  22
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
 # 23: Reserved
 isr23:
-    cli
     push  0
     push  23
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
 # 24: Reserved
 isr24:
-    cli
     push  0
     push  24
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
 # 25: Reserved
 isr25:
-    cli
     push  0
     push  25
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
 # 26: Reserved
 isr26:
-    cli
     push  0
     push  26
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
 # 27: Reserved
 isr27:
-    cli
     push  0
     push  27
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
 # 28: Reserved
 isr28:
-    cli
     push  0
     push  28
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
 # 29: Reserved
 isr29:
-    cli
     push  0
     push  29
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
 # 30: Reserved
 isr30:
-    cli
     push  0
     push  30
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
 # 31: Reserved
 isr31:
-    cli
     push  0
     push  31
-    jmp default_isr_common_stub
+    interrupt_handler_stub default_exception_handler
 
+.global isr_pic0, isr_pic1, isr_pic2, isr_pic3, isr_pic4, isr_pic5, isr_pic6, isr_pic7, isr_pic8, isr_pic9, isr_pic10, isr_pic11, isr_pic12, isr_pic13, isr_pic14, isr_pic15
+.type isr_pic0, @function
+.type isr_pic1, @function
+.type isr_pic2, @function
+.type isr_pic3, @function
+.type isr_pic4, @function
+.type isr_pic5, @function
+.type isr_pic6, @function
+.type isr_pic7, @function
+.type isr_pic8, @function
+.type isr_pic9, @function
+.type isr_pic10, @function
+.type isr_pic11, @function
+.type isr_pic12, @function
+.type isr_pic13, @function
+.type isr_pic14, @function
+.type isr_pic15, @function
+
+isr_pic0:
+	push  0
+	push  32
+	interrupt_handler_stub default_interrupt_handler
+
+isr_pic1:
+	push  1
+	push  33
+	interrupt_handler_stub keyboard_handler
+
+isr_pic2:
+	push  2
+	push  34
+	interrupt_handler_stub default_interrupt_handler
+
+isr_pic3:
+	push  3
+	push  35
+	interrupt_handler_stub default_interrupt_handler
+
+isr_pic4:
+	push  4
+	push  36
+	interrupt_handler_stub default_interrupt_handler
+
+isr_pic5:
+	push  5
+	push  37
+	interrupt_handler_stub default_interrupt_handler
+
+isr_pic6:
+	push  6
+	push  38
+	interrupt_handler_stub default_interrupt_handler
+
+isr_pic7:
+	push  7
+	push  39
+	interrupt_handler_stub default_interrupt_handler
+
+isr_pic8:
+	push  8
+	push  40
+	interrupt_handler_stub default_interrupt_handler
+
+isr_pic9:
+	push  9
+	push  41
+	interrupt_handler_stub default_interrupt_handler
+
+isr_pic10:
+	push  10
+	push  42
+	interrupt_handler_stub default_interrupt_handler
+
+isr_pic11:
+	push  11
+	push  43
+	interrupt_handler_stub default_interrupt_handler
+
+isr_pic12:
+	push  12
+	push  44
+	interrupt_handler_stub default_interrupt_handler
+
+isr_pic13:
+	push  13
+	push  45
+	interrupt_handler_stub default_interrupt_handler
+
+isr_pic14:
+	push  14
+	push  46
+	interrupt_handler_stub default_interrupt_handler
+
+isr_pic15:
+	push  15
+	push  47
+	interrupt_handler_stub default_interrupt_handler

@@ -15,9 +15,6 @@
 // TODO : Implement Task Gate Descriptor
 
 uint64_t create_interrupt_descriptor(uint32_t offset, uint16_t selector, uint8_t flag);
-extern void set_idt(void * idt_base_addr, unsigned short idt_length);
-void remap_pic();
-
 
 
 #endif

@@ -47,6 +47,6 @@
                      SEG_PRIV(3)     | SEG_DATA_RDWR
 
 uint64_t create_global_descriptor(uint32_t base, uint32_t limit, uint16_t flag);
-void set_gdt(void * gdt_base_addr, unsigned short gdt_length);
+
 
 #endif /** !GDT_HEADER **/

@@ -1,8 +1,10 @@
 #include <stdint.h>
+#include <string.h>
 #include <kernel/init.h>
 #include <arch/i386/gdt.h>
 #include <arch/i386/idt.h>
 #include <arch/i386/interrupt.h>
+#include <arch/i386/utility.h>
 
 uint64_t gdt[5];
 uint64_t idt[256];
@@ -51,24 +53,24 @@ static void init_idt() {
     idt[30] = create_interrupt_descriptor(isr30, 0x08, IDT_INTERRUPT_GATE);
     idt[31] = create_interrupt_descriptor(isr31, 0x08, IDT_INTERRUPT_GATE);
 
-    idt[32] = create_interrupt_descriptor(irq0, 0x08, IDT_INTERRUPT_GATE);
-    idt[33] = create_interrupt_descriptor(irq1, 0x08, IDT_INTERRUPT_GATE);
-    idt[34] = create_interrupt_descriptor(irq2, 0x08, IDT_INTERRUPT_GATE);
-    idt[35] = create_interrupt_descriptor(irq3, 0x08, IDT_INTERRUPT_GATE);
-    idt[36] = create_interrupt_descriptor(irq4, 0x08, IDT_INTERRUPT_GATE);
-    idt[37] = create_interrupt_descriptor(irq5, 0x08, IDT_INTERRUPT_GATE);
-    idt[38] = create_interrupt_descriptor(irq6, 0x08, IDT_INTERRUPT_GATE);
-    idt[39] = create_interrupt_descriptor(irq7, 0x08, IDT_INTERRUPT_GATE);
-    idt[40] = create_interrupt_descriptor(irq8, 0x08, IDT_INTERRUPT_GATE);
-    idt[41] = create_interrupt_descriptor(irq9, 0x08, IDT_INTERRUPT_GATE);
-    idt[42] = create_interrupt_descriptor(irq10, 0x08, IDT_INTERRUPT_GATE);
-    idt[43] = create_interrupt_descriptor(irq11, 0x08, IDT_INTERRUPT_GATE);
-    idt[44] = create_interrupt_descriptor(irq12, 0x08, IDT_INTERRUPT_GATE);
-    idt[45] = create_interrupt_descriptor(irq13, 0x08, IDT_INTERRUPT_GATE);
-    idt[46] = create_interrupt_descriptor(irq14, 0x08, IDT_INTERRUPT_GATE);
-    idt[47] = create_interrupt_descriptor(irq15, 0x08, IDT_INTERRUPT_GATE);
+    idt[32] = create_interrupt_descriptor(isr_pic0, 0x08, IDT_INTERRUPT_GATE);
+    idt[33] = create_interrupt_descriptor(isr_pic1, 0x08, IDT_INTERRUPT_GATE);
+    idt[34] = create_interrupt_descriptor(isr_pic2, 0x08, IDT_INTERRUPT_GATE);
+    idt[35] = create_interrupt_descriptor(isr_pic3, 0x08, IDT_INTERRUPT_GATE);
+    idt[36] = create_interrupt_descriptor(isr_pic4, 0x08, IDT_INTERRUPT_GATE);
+    idt[37] = create_interrupt_descriptor(isr_pic5, 0x08, IDT_INTERRUPT_GATE);
+    idt[38] = create_interrupt_descriptor(isr_pic6, 0x08, IDT_INTERRUPT_GATE);
+    idt[39] = create_interrupt_descriptor(isr_pic7, 0x08, IDT_INTERRUPT_GATE);
+    idt[40] = create_interrupt_descriptor(isr_pic8, 0x08, IDT_INTERRUPT_GATE);
+    idt[41] = create_interrupt_descriptor(isr_pic9, 0x08, IDT_INTERRUPT_GATE);
+    idt[42] = create_interrupt_descriptor(isr_pic10, 0x08, IDT_INTERRUPT_GATE);
+    idt[43] = create_interrupt_descriptor(isr_pic11, 0x08, IDT_INTERRUPT_GATE);
+    idt[44] = create_interrupt_descriptor(isr_pic12, 0x08, IDT_INTERRUPT_GATE);
+    idt[45] = create_interrupt_descriptor(isr_pic13, 0x08, IDT_INTERRUPT_GATE);
+    idt[46] = create_interrupt_descriptor(isr_pic14, 0x08, IDT_INTERRUPT_GATE);
+    idt[47] = create_interrupt_descriptor(isr_pic15, 0x08, IDT_INTERRUPT_GATE);
 
-    remap_pic();
+    initialize_PIC();
 
     set_idt(idt, sizeof(idt) - 1);
 }
@@ -76,4 +78,5 @@ static void init_idt() {
 void init(void * addr) {
     init_gdt();
     init_idt();
+    __asm__("sti");
 }

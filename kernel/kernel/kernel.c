@@ -26,9 +26,15 @@ void kernel_main(unsigned long magic, void * addr) {
 
     init(addr);
     printf("[+] system init complete\n");
+
+    __asm__("int $0");
     __asm__("int $1");
+    __asm__("int $2");
+    __asm__("int $3");
+    __asm__("int $4");
+    __asm__("int $5");
     printf("[+] wow\n");
 
-    abort();
+    //abort();
 
 }

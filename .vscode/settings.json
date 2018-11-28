@@ -1,7 +1,9 @@
 {
     "files.associations": {
         "gdt.h": "c",
-        "vga.h": "c"
+        "vga.h": "c",
+        "interrupt.h": "c",
+        "stdio.h": "c"
     },
     "files.eol": "\n"
 }
