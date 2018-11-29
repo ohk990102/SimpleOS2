@@ -9,7 +9,7 @@ char getchar() {
 #if defined(__is_libk)
 	c = terminal_getchar();
 #else
-	// TODO: Implement stdio and the write system call.
+	// TODO: Implement stdio and the read system call.
 #endif
 	return c;
 }
