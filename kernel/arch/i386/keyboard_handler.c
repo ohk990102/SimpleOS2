@@ -8,15 +8,21 @@
 #include <kernel/keyboard.h>
 
 
-
-
+static bool is_keyboard_outbuf_full() {
+    if(inb(0x64) & 0x01)
+        return true;
+    return false;
+}
+static bool is_keyboard_inbuf_full() {
+    if(inb(0x64) & 0x02)
+        return true;
+    return false;
+}
 static uint8_t get_scancode() {
     while(!is_keyboard_outbuf_full());
     return inb(0x60);
 }
 static struct KeyboardManagerStruct keyboardManager = { 0, };
-static struct Queue keyQueue;
-static struct KeyDataStruct keyQueueBuffer[ KEY_MAXQUEUECOUNT ];
 
 static struct KeyMappingEntryStruct keyMappingTable[ KEY_MAPPINGTABLEMAXCOUNT ] =
 {
@@ -132,7 +138,7 @@ static bool is_use_combined_code(uint8_t scanCode) {
     bool useCombinedKey = false;
 
     if(is_alphabet_scancode(downScanCode)) {
-        if(keyboardManager.shiftDown ^ keyboardManager.capsLockOn)
+        if(!keyboardManager.shiftDown != !keyboardManager.capsLockOn)
             useCombinedKey = true;
         else
             useCombinedKey = false;
@@ -151,11 +157,30 @@ static bool is_use_combined_code(uint8_t scanCode) {
     }
     return useCombinedKey;
 }
+static uint8_t wait_for_ACK() {
 
+    bool result = false;
+
+    outb(0x64, 0xAE);
+    for(int i = 0; i < 100; i++) {
+        for(int j = 0; j < 0xFFFF; j++) {
+            if(is_keyboard_outbuf_full()) {
+                break;
+            }
+        }
+        uint8_t data = inb(0x60);
+        if(data == 0xFA) {
+            result = true;
+            break;
+        }
+        else
+            keyDataToQueue(data);
+    }
+    return result;
+}
 static bool changeKeyboardLED(bool capsLockOn, bool numLockOn, bool scrollLockOn) {
     bool previousInterrupt = set_interrupt_flag(false);
     bool result;
-    uint8_t data;
 
     for(int i = 0; i < 0xFFFF; i++) {
         if(!is_keyboard_inbuf_full()) 
@@ -187,7 +212,7 @@ static void updateKeyboardStatus(uint8_t scanCode) {
 
     if(scanCode & 0x80) {
         down = false;
-        downScanCode = scanCode & 0x8F;
+        downScanCode = scanCode & 0x7F;
     }
     else {
         down = true;
@@ -197,15 +222,15 @@ static void updateKeyboardStatus(uint8_t scanCode) {
     if((downScanCode == 42) || (downScanCode == 54))
         keyboardManager.shiftDown = down;
     else if((downScanCode == 58) && down) {
-        keyboardManager.capsLockOn ^= true;
+        keyboardManager.capsLockOn = (keyboardManager.capsLockOn) ? false : true;
         LEDStatusChanged = true;
     }
     else if((downScanCode == 69) && down) {
-        keyboardManager.numLockOn ^= true;
+        keyboardManager.numLockOn = (keyboardManager.numLockOn) ? false : true;
         LEDStatusChanged = true;
     }
     else if((downScanCode == 70) && down) {
-        keyboardManager.scrollLockOn ^= true;
+        keyboardManager.scrollLockOn = (keyboardManager.scrollLockOn) ? false : true;
         LEDStatusChanged = true;
     }
 
@@ -265,27 +290,7 @@ uint8_t keyDataToQueue(uint8_t scanCode) {
     }
     return result;
 }
-static uint8_t wait_for_ACK() {
-    bool previousInterrupt = set_interrupt_flag(false);
-    bool result = false;
 
-    outb(0x64, 0xAE);
-    for(int i = 0; i < 100; i++) {
-        for(int j = 0; j < 0xFFFF; j++) {
-            if(is_keyboard_outbuf_full()) {
-                break;
-            }
-        }
-        uint8_t data = inb(0x60);
-        if(data == 0xFA) {
-            result = true;
-            break;
-        }
-        else
-            keyDataToQueue(data);
-    }
-    return result;
-}
 bool keyDataFromQueue(struct KeyDataStruct * data) {
     bool result;
     bool previousInterrupt;

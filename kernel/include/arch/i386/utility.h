@@ -41,34 +41,26 @@ static inline void disable_interrupt() {
 }
 static inline uint32_t read_rflag() {
     uint32_t a;
-    __asm__(".intel syntax;"
+    __asm__(".intel_syntax noprefix;"
             "pushfd;"
             "pop eax;"
-            "mov %0, eax"
+            "mov %0, eax;"
+            ".att_syntax;"
             : "=r"(a)
-            : : "eax");
+            : 
+            :"eax");
     return a;
     
 }
 static inline bool set_interrupt_flag(bool set_interrupt) {
 
-    uint8_t rflag = read_rflag();
+    uint16_t rflag = read_rflag();
     if(set_interrupt)
-        enable_interrupt();
+        __asm__("sti");
     else
-        disable_interrupt();
+        __asm__("cli");
     
     if(rflag & 0x0200)
-        return true;
-    return false;
-}
-static inline bool is_keyboard_outbuf_full() {
-    if(inb(0x64) & 0x01)
-        return true;
-    return false;
-}
-static inline bool is_keyboard_inbuf_full() {
-    if(inb(0x64) & 0x02)
         return true;
     return false;
 }

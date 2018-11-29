@@ -5,6 +5,7 @@
 #include <arch/i386/idt.h>
 #include <arch/i386/interrupt.h>
 #include <arch/i386/utility.h>
+#include <kernel/keyboard.h>
 
 uint64_t gdt[5];
 uint64_t idt[256];
@@ -75,8 +76,7 @@ static void init_idt() {
     set_idt(idt, sizeof(idt) - 1);
 }
 
-void init(void * addr) {
+void init_descriptor(void * addr) {
     init_gdt();
     init_idt();
-    __asm__("sti");
 }

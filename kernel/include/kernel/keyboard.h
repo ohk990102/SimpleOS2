@@ -2,6 +2,8 @@
 #define KEYBOARD_HEADER 1
 
 #include <kernel/queue.h>
+#include <stdint.h>
+#include <stdbool.h>
 
 #define KEY_MAXQUEUECOUNT 100
 
@@ -55,7 +57,7 @@
 struct KeyDataStruct {
     uint8_t scanCode;
     uint8_t asciiCode;
-    uint8_t flags;
+    bool flags;
 };
 
 struct KeyboardManagerStruct
@@ -65,7 +67,7 @@ struct KeyboardManagerStruct
     bool numLockOn;
     bool scrollLockOn;
     bool extendedCodeIn;
-    int skipCountForPause;
+    uint8_t skipCountForPause;
 };
 struct KeyMappingEntryStruct
 {
@@ -74,5 +76,13 @@ struct KeyMappingEntryStruct
 };
 //struct Queue keyQueue;
 //struct KeyDataStruct keyQueueBuffer[KEY_MAXQUEUECOUNT];
+struct Queue keyQueue;
+struct KeyDataStruct keyQueueBuffer[ KEY_MAXQUEUECOUNT ];
+
+bool keyDataFromQueue(struct KeyDataStruct * data);
+uint8_t keyDataToQueue(uint8_t scanCode);
+bool activate_keyboard();
+bool initialize_keyboard();
+
 
 #endif

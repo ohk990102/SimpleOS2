@@ -1,8 +1,10 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <kernel/tty.h>
 #include <kernel/multiboot2.h>
 #include <kernel/init.h>
+#include <kernel/keyboard.h>
 
 void kernel_main(unsigned long magic, void * addr) {
     terminal_initialize();
@@ -24,16 +26,20 @@ void kernel_main(unsigned long magic, void * addr) {
     }
     **/
 
-    init(addr);
+    init_descriptor(addr);
     printf("[+] system init complete\n");
+    if(!initialize_keyboard()) {
+        printf("[!] Error occured while initializing keyboard");
+    }
+    __asm__("sti");
 
-    __asm__("int $0");
-    __asm__("int $1");
-    __asm__("int $2");
-    __asm__("int $3");
-    __asm__("int $4");
-    __asm__("int $5");
-    printf("[+] wow\n");
+    struct KeyDataStruct data;
+    char a[2];
+    while(1) {
+        a[0] = getchar();
+        a[1] = '\x00';
+        printf(a);
+    }
 
     //abort();
 

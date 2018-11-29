@@ -30,7 +30,8 @@ LIBS:=$(LIBS) $(KERNEL_ARCH_LIBS)
 KERNEL_OBJS=\
 $(KERNEL_ARCH_OBJS)\
 kernel/kernel.o \
-kernel/queue.o
+kernel/queue.o \
+kernel/keyboard.o
  
 OBJS=\
 $(ARCHDIR)/crti.o \

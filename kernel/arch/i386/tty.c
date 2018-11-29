@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include <kernel/tty.h>
+#include <kernel/keyboard.h>
 
 #include <arch/i386/vga.h>
 
@@ -62,4 +63,21 @@ void terminal_write(const char* data, size_t size) {
 
 void terminal_writestring(const char* data) {
 	terminal_write(data, strlen(data));
+}
+
+char terminal_getchar() {
+	struct KeyDataStruct data;
+
+	while(1) {
+		while(!keyDataFromQueue(&data));
+		if(data.flags & KEY_FLAGS_DOWN) {
+			if(( data.asciiCode == KEY_LSHIFT ) || ( data.asciiCode == KEY_RSHIFT ) ||
+                 ( data.asciiCode == KEY_CAPSLOCK ) || ( data.asciiCode == KEY_NUMLOCK ) ||
+                 ( data.asciiCode == KEY_SCROLLLOCK ))
+				continue;
+			return data.asciiCode;
+		}
+			
+	}
+	return -1;
 }
