@@ -119,7 +119,7 @@ static struct KeyMappingEntryStruct keyMappingTable[ KEY_MAPPINGTABLEMAXCOUNT ] 
 };
 static bool is_alphabet_scancode(uint8_t scanCode) {
     if(('a' <= keyMappingTable[scanCode].normalCode) && 
-    (keyMappingTable[scanCode].normalCode) <= 'b') 
+    (keyMappingTable[scanCode].normalCode) <= 'z') 
         return true;
     return false;
 }
