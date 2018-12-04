@@ -1,7 +1,7 @@
 #ifndef KEYBOARD_HEADER
 #define KEYBOARD_HEADER 1
 
-#include <kernel/queue.h>
+#include <lib/queue.h>
 #include <stdint.h>
 #include <stdbool.h>
 
