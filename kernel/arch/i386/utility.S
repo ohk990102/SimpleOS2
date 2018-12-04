@@ -29,7 +29,6 @@ flush_gdt:
     mov gs, ax
     mov ss, ax
     ret
-
 set_idt:
     mov eax, [esp+4]
     mov [idtr+2], eax
@@ -37,4 +36,64 @@ set_idt:
     mov [idtr], ax
     lidt [idtr]
     ret
+
+.global switch_context
+.type switch_context, @function
+
+switch_context:
+    push ebp
+    mov ebp, esp
+    pushfd
+    cmp dword ptr [ebp+8], 0
+    je load_context
+    popfd
+    
+    push edi
+    push eax
+    mov edi, [ebp + 8]
+
+    mov ax, ss
+    mov dword ptr [edi + 48], ax # ss
+
+    mov eax, ebp
+    add eax, 8
+    mov dword ptr [edi + 44], eax # useresp
+    
+    pushfd
+    pop eax
+    mov dword ptr [edi + 40], eax # eflags
+
+    mov ax, cs
+    mov dword ptr [edi + 36], ax # cs
+
+    mov eax, dword ptr [ebp + 4]
+    mov dword ptr [edi + 32], eax # eip
+
+    pop eax
+    pop edi
+    pop ebp
+
+    mov esp, dword ptr [esp + 4]
+    add esp, 8 * 4
+    pusha
+
+    mov esp, dword ptr [esp + 44]
+
+load_context:
+    mov esp, [esp + 4]
+    mov eax, esp
+    mov esp, [esp + 44]
+    
+    push [eax+40]
+    push [eax+36]
+    push [eax+32]
+
+    mov esp, eax
+    popa
+    mov esp, [esp+12]
+    sub esp, 12
+    iret
+
+
+
 
