@@ -21,7 +21,8 @@ LIBS:=$(LIBS) -nostdlib -lk -lgcc
 ARCHDIR=arch/$(HOSTARCH)
 
 include $(ARCHDIR)/make.config
- 
+include lib/make.config
+
 CFLAGS:=$(CFLAGS) $(KERNEL_ARCH_CFLAGS)
 CPPFLAGS:=$(CPPFLAGS) $(KERNEL_ARCH_CPPFLAGS)
 LDFLAGS:=$(LDFLAGS) $(KERNEL_ARCH_LDFLAGS)
@@ -30,13 +31,13 @@ LIBS:=$(LIBS) $(KERNEL_ARCH_LIBS)
 KERNEL_OBJS=\
 $(KERNEL_ARCH_OBJS)\
 kernel/kernel.o \
-kernel/queue.o \
 kernel/keyboard.o
  
 OBJS=\
 $(ARCHDIR)/crti.o \
 $(ARCHDIR)/crtbegin.o \
 $(KERNEL_OBJS) \
+$(LIB_OBJS) \
 $(ARCHDIR)/crtend.o \
 $(ARCHDIR)/crtn.o \
  
@@ -45,6 +46,7 @@ $(LDFLAGS) \
 $(ARCHDIR)/crti.o \
 $(ARCHDIR)/crtbegin.o \
 $(KERNEL_OBJS) \
+$(LIB_OBJS) \
 $(LIBS) \
 $(ARCHDIR)/crtend.o \
 $(ARCHDIR)/crtn.o \

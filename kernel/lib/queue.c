@@ -1,6 +1,6 @@
 #include <stdbool.h>
 #include <string.h>
-#include <kernel/queue.h>
+#include <lib/queue.h>
 
 
 void initializeQueue(struct Queue * queue, void * queueBuffer, int maxDataCount, int dataSize) {

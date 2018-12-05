@@ -4,7 +4,7 @@
 #include <arch/i386/interrupt.h>
 #include <arch/i386/idt.h>
 #include <arch/i386/utility.h>
-#include <kernel/queue.h>
+#include <lib/queue.h>
 #include <kernel/keyboard.h>
 
 

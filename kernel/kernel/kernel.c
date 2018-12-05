@@ -5,6 +5,30 @@
 #include <kernel/multiboot2.h>
 #include <kernel/init.h>
 #include <kernel/keyboard.h>
+#include <arch/i386/task.h>
+
+static struct TaskControlBlock tcb[2] = {0, };
+static uint32_t stack[1024] = {0, };
+void testTask() {
+    int i = 0; 
+    while(1) {
+        printf("[%d] This is from testTask. Press any key to switch\n", i++);
+        getchar();
+        
+        switch_context(&(tcb[1].context), &(tcb[0].context));
+    }
+}
+
+void createTestTask() {
+    int i = 0;
+    setup_task(&(tcb[1]), 1, 0, testTask, stack, sizeof(stack));
+    while(1) {
+        printf("[%d] This is from createTestTask. Press any key to switch\n", i++);
+        getchar();
+        switch_context(&(tcb[0].context), &(tcb[1].context));
+    }
+
+}
 
 void kernel_main(unsigned long magic, void * addr) {
     terminal_initialize();
@@ -33,13 +57,7 @@ void kernel_main(unsigned long magic, void * addr) {
     }
     __asm__("sti");
 
-    struct KeyDataStruct data;
-    char a[2];
-    while(1) {
-        a[0] = getchar();
-        a[1] = '\x00';
-        printf(a);
-    }
+    createTestTask();
 
     //abort();
 
