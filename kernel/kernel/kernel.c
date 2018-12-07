@@ -5,29 +5,52 @@
 #include <kernel/multiboot2.h>
 #include <kernel/init.h>
 #include <kernel/keyboard.h>
-#include <arch/i386/task.h>
+#include <arch/i386/task_rr.h>
+#include <arch/i386/vga.h>
+#include <arch/i386/pit.h>
 
-static struct TaskControlBlock tcb[2] = {0, };
-static uint32_t stack[1024] = {0, };
-void testTask() {
-    int i = 0; 
+void testTask1() {
+    uint8_t data;
+    int i = 0, x = 0, y = 0, margin;
+    struct TaskControlBlock * runningTask;
+    runningTask = getRunningTask();
+    margin = (runningTask->link.id & 0x7FFFFFFF) % 10;
     while(1) {
-        printf("[%d] This is from testTask. Press any key to switch\n", i++);
-        getchar();
-        
-        switch_context(&(tcb[1].context), &(tcb[0].context));
+        switch(i) {
+        case 0:
+            x++;
+            if(x >= VGA_WIDTH - margin)
+                i = 1;
+            break;
+        case 1:
+            y++;
+            if(y >= VGA_HEIGHT - margin)
+                i = 2;
+            break;
+        case 2:
+            x--;
+            if(x < margin)
+                i = 3;
+            break;
+        case 3:
+            y--;
+            if(y < margin)
+                i = 0;
+            break;
+        }
+        terminal_putentryat(data, vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK), x, y);
+        data++;
+        schedule();
     }
 }
 
 void createTestTask() {
-    int i = 0;
-    setup_task(&(tcb[1]), 1, 0, testTask, stack, sizeof(stack));
-    while(1) {
-        printf("[%d] This is from createTestTask. Press any key to switch\n", i++);
-        getchar();
-        switch_context(&(tcb[0].context), &(tcb[1].context));
+    for(int i = 0; i < 1; i++) {
+        if(createTask(0, testTask1) == 0) {
+            printf("[!] Something Wrong\n");
+        }
     }
-
+    printf("[+] Task1 Created\n");
 }
 
 void kernel_main(unsigned long magic, void * addr) {
@@ -53,12 +76,16 @@ void kernel_main(unsigned long magic, void * addr) {
     init_descriptor(addr);
     printf("[+] system init complete\n");
     if(!initialize_keyboard()) {
-        printf("[!] Error occured while initializing keyboard");
+        printf("[!] Error occured while initializing keyboard\n");
     }
+    
+    initializeScheduler();
+    initialize_pit(MSTOCOUNT(1), 1);
+
     __asm__("sti");
 
+    getchar();
     createTestTask();
-
-    //abort();
+    while(1);
 
 }

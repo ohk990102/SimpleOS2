@@ -3,7 +3,8 @@
         "gdt.h": "c",
         "vga.h": "c",
         "interrupt.h": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "stdint.h": "c"
     },
     "files.eol": "\n"
 }

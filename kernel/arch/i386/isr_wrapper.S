@@ -2,6 +2,7 @@
 .intel_syntax noprefix
 
 .extern default_interrupt_handler, default_exception_handler, keyboard_handler
+.extern timer_handler
 .section .text
 .macro interrupt_handler_stub handler_function
     pusha # Pushes edi,esi,ebp,esp,ebx,edx,ecx,eax
@@ -266,7 +267,7 @@ isr31:
 isr_pic0:
 	push  0
 	push  32
-	interrupt_handler_stub default_interrupt_handler
+	interrupt_handler_stub timer_handler
 
 isr_pic1:
 	push  1

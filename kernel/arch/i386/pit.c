@@ -2,7 +2,10 @@
 #include <stdbool.h>
 #include <arch/i386/pit.h>
 #include <arch/i386/utility.h>
+#include <arch/i386/task_rr.h>
+#include <arch/i386/interrupt.h>
 
+volatile uint32_t tickCount = 0;
 
 void initialize_pit(uint16_t count, bool periodic) {
     outb(PIT_PORT_CONTROL, PIT_COUNTER0_ONCE);
@@ -34,4 +37,15 @@ void wait_using_pit(uint16_t count) {
         if(((lastCounter0 - currentCounter0) & 0xFFFF) >= count)
             break;
     }
+}
+void timer_handler(struct registers_t * r) {
+    printf("timer\n");
+    send_EOI_to_PIC(r->int_no);
+    tickCount++;
+    decreaseProcessorTime();
+    if(isProcessorTimeExpired())
+        scheduleInInterrupt(r);
+}
+uint32_t getTickCount() {
+    return tickCount;
 }

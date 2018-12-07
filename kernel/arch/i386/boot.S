@@ -17,6 +17,13 @@ boot_page_directory:
 	.skip 4096
 boot_page_table1:
 	.skip 4096
+stack_pool_page_table1:
+    .skip 4096
+stack_pool_page_table2:
+    .skip 4096
+tcb_pool_page_table:
+    .skip 4096
+
 
 .section .multiboot
 multiboot_header:
@@ -62,6 +69,48 @@ multiboot_entry:
     mov     dword ptr (boot_page_directory - 0xC0000000 + 0), offset (boot_page_table1 - 0xC0000000 + 0x003)
     mov     dword ptr (boot_page_directory - 0xC0000000 + 768 * 4), offset (boot_page_table1 - 0xC0000000 + 0x003)
 
+    # stack pool page table(for multitasking)
+    mov     edi, offset (stack_pool_page_table1 - 0xC0000000)
+    mov     esi, offset (stack_pool - 0xC0000000)
+    mov     ecx, 1024
+5:
+    mov     edx, esi
+    or      edx,  0x0003
+    mov     [edi], edx
+    add     esi, 4096
+    add     edi, 4
+    loop    5b
+
+    mov     edi, offset (stack_pool_page_table2 - 0xC0000000)
+    mov     ecx, 1024
+6:
+    mov     edx, esi
+    or      edx,  0x0003
+    mov     [edi], edx
+    add     esi, 4096
+    add     edi, 4
+    loop    6b
+
+    # map to 0xC1000000
+    mov     dword ptr (boot_page_directory - 0xC0000000 + 772 * 4), offset (stack_pool_page_table1 - 0xC0000000 + 0x003)
+    # map to 0xC1400000 (higher half)
+    mov     dword ptr (boot_page_directory - 0xC0000000 + 773 * 4), offset (stack_pool_page_table1 - 0xC0000000 + 0x003)
+
+    mov     edi, offset (tcb_pool_page_table - 0xC0000000)
+    mov     esi, offset (tcb_pool - 0xC0000000)
+    mov     ecx, 24
+7:
+    mov     edx, esi
+    or      edx,  0x0003
+    mov     [edi], edx
+    add     esi, 4096
+    add     edi, 4
+    loop    7b
+
+    # map to 0xC1800000
+    mov     dword ptr (boot_page_directory - 0xC0000000 + 774 * 4), offset (tcb_pool_page_table - 0xC0000000 + 0x003)
+
+
     # set cr3 to boot_page_directory
     mov     ecx, offset (boot_page_directory - 0xC0000000)
     mov     cr3, ecx
@@ -96,4 +145,9 @@ loop:
 stack:
 .skip STACK_SIZE
 
-
+.section .TCBPool, "aw", @nobits
+tcb_pool:
+.skip 0x24000
+.section .StackPool, "aw", @nobits
+stack_pool:
+.skip 0x800000

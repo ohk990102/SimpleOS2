@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <arch/i386/interrupt.h>
 
 #define PIT_FREQUENCY   1193180
 #define MSTOCOUNT(x)    (PIT_FREQUENCY * (x) / 1000)
@@ -22,8 +23,12 @@
 #define PIT_COUNTER0_ONCE       (PIT_CONTROL_COUNTER0 | PIT_CONTROL_LSBMSBRW | PIT_CONTROL_MODE0 | PIT_CONTROL_BINARYCOUNTER)
 #define PIT_COUNTER0_PERIODIC   (PIT_CONTROL_COUNTER0 | PIT_CONTROL_LSBMSBRW | PIT_CONTROL_MODE2 | PIT_CONTROL_BINARYCOUNTER)
 
+ 
+
 void initialize_pit(uint16_t count, bool periodic);
 uint16_t read_counter0();
 void wait_using_pit(uint16_t count);
+void timer_handler(struct registers_t * r);
+uint32_t getTickCount();
 
 #endif

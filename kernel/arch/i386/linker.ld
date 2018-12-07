@@ -37,6 +37,13 @@ SECTIONS
 	}
 	_kernel_end = .;
 
+	. = 0xC1000000;
+	.pool ALIGN(4K) : AT (ADDR (.pool) - 0xC0000000)
+	{
+		*(.StackPool)
+		*(.TCBPool)
+	}
+
 	/* The compiler may produce other sections, put them in the proper place in
 	   in this file, if you'd like to include them in the final kernel. */
 }
