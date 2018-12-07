@@ -39,7 +39,6 @@ void wait_using_pit(uint16_t count) {
     }
 }
 void timer_handler(struct registers_t * r) {
-    printf("timer\n");
     send_EOI_to_PIC(r->int_no);
     tickCount++;
     decreaseProcessorTime();
