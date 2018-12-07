@@ -45,7 +45,7 @@ switch_context:
     mov ebp, esp
     pushfd
     cmp dword ptr [ebp+8], 0
-    je load_context
+    je load_context1
     popfd
     
     push edi
@@ -78,8 +78,15 @@ switch_context:
     pusha
 
     mov esp, dword ptr [esp + 44]
+    jmp load_context2
 
-load_context:
+load_context1:
+    popfd
+    mov esp, ebp
+    pop ebp
+    pop eax
+
+load_context2:
     mov esp, [esp + 4]
     mov eax, esp
     mov esp, [esp + 44]

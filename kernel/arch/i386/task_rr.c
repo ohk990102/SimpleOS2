@@ -140,8 +140,14 @@ void copyRegistersToContext(struct context_t * c, struct registers_t * r, bool c
     c->eip = r->eip;
     c->cs = r->cs;
     c->eflags = r->eflags;
-    c->useresp = &(r->useresp);
-    c->ss = 0x08;
+    if(changeRing) {
+        c->useresp = r->useresp;
+        c->ss = r->ss;
+    }
+    else {
+        c->useresp = r->esp;
+        c->ss = 0x10;
+    }
 }
 bool scheduleInInterrupt(struct registers_t * r) {
     struct TaskControlBlock * runningTask, *nextTask;
@@ -156,7 +162,7 @@ bool scheduleInInterrupt(struct registers_t * r) {
     rrScheduler.runningTask = nextTask;
     copyContextToRegisters(r, &(nextTask->context), false);
     rrScheduler.processorTime = TASK_PROCESSORTIME;
-    return true;
+    switch_context(0, &(nextTask->context));
 }
 void decreaseProcessorTime() {
     if(rrScheduler.processorTime > 0)

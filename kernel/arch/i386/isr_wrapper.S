@@ -6,6 +6,8 @@
 .section .text
 .macro interrupt_handler_stub handler_function
     pusha # Pushes edi,esi,ebp,esp,ebx,edx,ecx,eax
+    lea eax, [esp + 52]
+    mov dword ptr[esp + 12], eax
 	mov ax, ds # Lower 16-bits of eax = ds.
 	push eax # save the data segment descriptor
 	mov ax, 0x10  # kernel data segment descriptor
@@ -140,7 +142,6 @@ isr13:
 
 # 14: Page Fault Exception (With Error Code!)
 isr14:
-    
     push  14
     interrupt_handler_stub default_exception_handler
 
