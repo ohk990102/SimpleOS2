@@ -3,7 +3,7 @@
 #include <arch/i386/utility.h>
 
 void default_exception_handler(struct registers_t * r) {
-    printf("Exception : %d\n", r->int_no);
+    printf("Exception : %d\nErrorCode : %d\n", r->int_no, r->err_code);
 }
 
 void default_interrupt_handler(struct registers_t * r) {
