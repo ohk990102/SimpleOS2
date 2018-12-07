@@ -14,7 +14,7 @@ void testTask1() {
     int i = 0, x = 0, y = 0, margin;
     struct TaskControlBlock * runningTask;
     runningTask = getRunningTask();
-    margin = (runningTask->link.id & 0x7FFFFFFF) % 10;
+    margin = (runningTask->link.id & 0x7FFFFFFF) % 10 + 1;
     while(1) {
         switch(i) {
         case 0:
@@ -40,17 +40,17 @@ void testTask1() {
         }
         terminal_putentryat(data, vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK), x, y);
         data++;
-        schedule();
+        //schedule();
     }
 }
 
-void createTestTask() {
-    for(int i = 0; i < 1; i++) {
+void createTestTask(count) {
+    for(int i = 0; i < count; i++) {
         if(createTask(0, testTask1) == 0) {
             printf("[!] Something Wrong\n");
         }
     }
-    printf("[+] Task1 Created\n");
+    printf("[+] Task1 %d Created\n", count);
 }
 
 void kernel_main(unsigned long magic, void * addr) {
@@ -85,7 +85,8 @@ void kernel_main(unsigned long magic, void * addr) {
     __asm__("sti");
 
     getchar();
-    createTestTask();
+    createTestTask(1023);
+    int i = 0;
     while(1);
 
 }
