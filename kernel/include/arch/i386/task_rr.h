@@ -21,7 +21,7 @@ struct __attribute__((__packed__)) context_t{
     uint32_t eip, cs, eflags, useresp, ss; /* Pushed by the processor automatically */
 };
 
-struct TaskControlBlock {
+struct RRTaskControlBlock {
     struct LinkedListBaseNode link;
     struct context_t context;
     uint32_t flags;
@@ -29,27 +29,27 @@ struct TaskControlBlock {
     void * stackAddress;
     uint32_t stackSize;
 };
-struct TCBPoolManager {
-    struct TaskControlBlock * tcbStartAddress;
+struct RRTCBPoolManager {
+    struct RRTaskControlBlock * tcbStartAddress;
     uint32_t maxCount;
     uint32_t useCount;
 
     uint32_t allocatedCount;
 };
 struct RRScheduler {
-    struct TaskControlBlock * runningTask;
+    struct RRTaskControlBlock * runningTask;
     int processorTime;
     struct LinkedList readyList;
 };
 
 void switch_context(struct context_t *currentContext, struct context_t * nextContext);
-void setup_task(struct TaskControlBlock *tcb, uint32_t flags, void * entryPointAddress, void * stackAddress, uint32_t stackSize);
-struct TaskControlBlock * createTask(uint32_t flags, void * entryPointAddress);
+void setup_task(struct RRTaskControlBlock *tcb, uint32_t flags, void * entryPointAddress, void * stackAddress, uint32_t stackSize);
+struct RRTaskControlBlock * createTask(uint32_t flags, void * entryPointAddress);
 void initializeScheduler();
-void setRunningTask(struct TaskControlBlock * task);
-struct TaskControlBlock * getRunningTask();
-struct TaskControlBlock * getNextTaskToRun();
-void addTaskToReadyList(struct TaskControlBlock * task);
+void setRunningTask(struct RRTaskControlBlock * task);
+struct RRTaskControlBlock * getRunningTask();
+struct RRTaskControlBlock * getNextTaskToRun();
+void addTaskToReadyList(struct RRTaskControlBlock * task);
 void schedule();
 bool scheduleInInterrupt(struct registers_t * r);
 void decreaseProcessorTime();

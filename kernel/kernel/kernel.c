@@ -12,7 +12,7 @@
 void testTask1() {
     uint8_t data;
     int i = 0, x = 0, y = 0, margin;
-    struct TaskControlBlock * runningTask;
+    struct RRTaskControlBlock * runningTask;
     runningTask = getRunningTask();
     margin = (runningTask->link.id & 0x7FFFFFFF) % 10 + 1;
     while(1) {
@@ -40,7 +40,7 @@ void testTask1() {
         }
         terminal_putentryat(data, vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK), x, y);
         data++;
-        //schedule();
+        schedule();
     }
 }
 

@@ -7,9 +7,9 @@
 #include <arch/i386/interrupt.h>
 
 static struct RRScheduler rrScheduler;
-static struct TCBPoolManager tcbPoolManager;
+static struct RRTCBPoolManager tcbPoolManager;
 
-void setup_task(struct TaskControlBlock *tcb, uint32_t flags, void * entryPointAddress, void * stackAddress, uint32_t stackSize) {
+void setup_task(struct RRTaskControlBlock *tcb, uint32_t flags, void * entryPointAddress, void * stackAddress, uint32_t stackSize) {
     memset(&(tcb->context), 0, sizeof(struct context_t));
     tcb->context.useresp = (uint32_t)stackAddress + stackSize;
     tcb->context.ebp = (uint32_t)stackAddress + stackSize;
@@ -25,7 +25,7 @@ void setup_task(struct TaskControlBlock *tcb, uint32_t flags, void * entryPointA
 void initializeTCBPool() {
     memset(&(tcbPoolManager), 0, sizeof(tcbPoolManager));
     tcbPoolManager.tcbStartAddress = (void *) TASK_TCBPOOLADDRESS;
-    memset((void *) TASK_TCBPOOLADDRESS, 0, sizeof(struct TaskControlBlock ) * TASK_MAXCOUNT);
+    memset((void *) TASK_TCBPOOLADDRESS, 0, sizeof(struct RRTaskControlBlock ) * TASK_MAXCOUNT);
 
     for(int i = 0; i < TASK_MAXCOUNT; i++) {
         tcbPoolManager.tcbStartAddress[i].link.id = i;
@@ -35,8 +35,8 @@ void initializeTCBPool() {
     tcbPoolManager.allocatedCount = 1;
 }
 
-struct TaskControlBlock * allocateTCB() {
-    struct TaskControlBlock * tcb = 0;
+struct RRTaskControlBlock * allocateTCB() {
+    struct RRTaskControlBlock * tcb = 0;
     
     if(tcbPoolManager.useCount == tcbPoolManager.maxCount) {
         return 0;
@@ -68,8 +68,8 @@ void freeTCB(uint32_t id) {
     tcbPoolManager.useCount--;
 }
 
-struct TaskControlBlock * createTask(uint32_t flags, void * entryPointAddress) {
-    struct TaskControlBlock * task;
+struct RRTaskControlBlock * createTask(uint32_t flags, void * entryPointAddress) {
+    struct RRTaskControlBlock * task;
     void * stackAddress;
 
     task = allocateTCB();
@@ -89,22 +89,22 @@ void initializeScheduler() {
     rrScheduler.runningTask = allocateTCB();
 }
 
-void setRunningTask(struct TaskControlBlock * task) {
+void setRunningTask(struct RRTaskControlBlock * task) {
     rrScheduler.runningTask = task;
 }
-struct TaskControlBlock * getRunningTask() {
+struct RRTaskControlBlock * getRunningTask() {
     return rrScheduler.runningTask;
 }
-struct TaskControlBlock * getNextTaskToRun() {
+struct RRTaskControlBlock * getNextTaskToRun() {
     if(getLinkedListCount(&(rrScheduler.readyList)) == 0)
         return 0;
-    return (struct TaskControlBlock * ) removeHeadOfLinkedList(&rrScheduler.readyList);
+    return (struct RRTaskControlBlock * ) removeHeadOfLinkedList(&rrScheduler.readyList);
 }
-void addTaskToReadyList(struct TaskControlBlock * task) {
+void addTaskToReadyList(struct RRTaskControlBlock * task) {
     insertTailOfLinkedList(&(rrScheduler.readyList), task);
 }
 void schedule() {
-    struct TaskControlBlock * runningTask, *nextTask;
+    struct RRTaskControlBlock * runningTask, *nextTask;
     bool previousFlag;
 
     if(getLinkedListCount(&(rrScheduler.readyList)) == 0)
@@ -150,7 +150,7 @@ void copyRegistersToContext(struct context_t * c, struct registers_t * r, bool c
     }
 }
 bool scheduleInInterrupt(struct registers_t * r) {
-    struct TaskControlBlock * runningTask, *nextTask;
+    struct RRTaskControlBlock * runningTask, *nextTask;
 
     nextTask = getNextTaskToRun();
     if(nextTask == 0)
