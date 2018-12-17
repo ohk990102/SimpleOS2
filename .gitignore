@@ -1,0 +1,6 @@
+*.iso
+isodir
+sysroot
+binutils-*
+gcc-*
+toolchain
