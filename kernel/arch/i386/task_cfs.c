@@ -200,7 +200,7 @@ bool scheduleInInterrupt(struct registers_t * r) {
 
     if (cfsScheduler.runqueues.count > nr_latency) {
         period = sysctl_sched_min_granularity;
-        period *= cfsScheduler.runqueues.count + 1;
+        period *= cfsScheduler.runqueues.count;
     }
     nextTask = getNextTaskToRun();
 
