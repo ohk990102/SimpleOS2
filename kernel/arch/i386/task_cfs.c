@@ -127,13 +127,14 @@ void schedule() {
     bool previousFlag;
 
     if(cfsScheduler.runqueues.count == 0) {
-        cfsScheduler.processorTime = cfsScheduler.timeslice;
+        if(cfsScheduler.processorTime <= 0)
+            cfsScheduler.processorTime = cfsScheduler.timeslice;
         return;
     }
     previousFlag = set_interrupt_flag(false);
 
     runningTask = cfsScheduler.runningTask;
-    runningTask->link.key += NICE_0_LOAD * (cfsScheduler.timeslice - cfsScheduler.processorTime + 1000000) / cfsScheduler.totalWeight;
+    runningTask->link.key += NICE_0_LOAD * (cfsScheduler.timeslice - cfsScheduler.processorTime + 1000000) / prio_to_weight[runningTask->nice + 20];
 
     addTaskToRunQueue(runningTask);
 
@@ -190,7 +191,7 @@ bool scheduleInInterrupt(struct registers_t * r) {
         return false;
     }
     runningTask = cfsScheduler.runningTask;
-    runningTask->link.key += NICE_0_LOAD * (cfsScheduler.timeslice - cfsScheduler.processorTime) / cfsScheduler.totalWeight;
+    runningTask->link.key += NICE_0_LOAD * (cfsScheduler.timeslice - cfsScheduler.processorTime) / prio_to_weight[runningTask->nice + 20];
 
     addTaskToRunQueue(runningTask);
 
