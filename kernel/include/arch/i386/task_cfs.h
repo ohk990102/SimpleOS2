@@ -22,6 +22,7 @@ struct __attribute__((__packed__)) context_t{
 
 struct CFSTaskControlBlock {
     struct RBTreeBaseNode link;
+    uint32_t id;
     struct context_t context;
     uint32_t flags;
     void * stackAddress;
@@ -38,4 +39,17 @@ struct CFSTCBPoolManager {
 struct CFSScheduler {
     struct CFSTaskControlBlock * runningTask;
     struct RBTree runqueues;
+    int64_t processorTime;
+    int64_t timeslice;
+    uint64_t totalWeight;
 };
+void initializeScheduler();
+void schedule();
+void setup_task(struct CFSTaskControlBlock *tcb, uint32_t flags, void * entryPointAddress, void * stackAddress, uint32_t stackSize, uint32_t nice);
+void switch_context(struct context_t *currentContext, struct context_t * nextContext);
+struct CFSTaskControlBlock * createTask(uint32_t flags, void * entryPointAddress, uint32_t nice);
+void decreaseProcessorTime();
+bool isProcessorTimeExpired();
+struct CFSTaskControlBlock * getRunningTask();
+
+#endif

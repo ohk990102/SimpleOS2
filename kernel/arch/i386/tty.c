@@ -5,6 +5,7 @@
 
 #include <kernel/tty.h>
 #include <kernel/keyboard.h>
+#include <arch/i386/task_cfs.h>
 
 #include <arch/i386/vga.h>
 
@@ -62,7 +63,9 @@ char terminal_getchar() {
 	struct KeyDataStruct data;
 
 	while(1) {
-		while(!keyDataFromQueue(&data));
+		while(!keyDataFromQueue(&data)) {
+			schedule();
+		}
 		if(data.flags & KEY_FLAGS_DOWN) {
 			if(( data.asciiCode == KEY_LSHIFT ) || ( data.asciiCode == KEY_RSHIFT ) ||
                  ( data.asciiCode == KEY_CAPSLOCK ) || ( data.asciiCode == KEY_NUMLOCK ) ||
