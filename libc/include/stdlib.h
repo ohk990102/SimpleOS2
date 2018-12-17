@@ -9,6 +9,8 @@ extern "C" {
 
 __attribute__((__noreturn__))
 void abort(void);
+int atoi(const char * buffer);
+
 
 #ifdef __cplusplus
 }
