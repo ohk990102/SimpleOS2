@@ -4,13 +4,12 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define BLACK   true
-#define RED     false
+#define BLACK   false
+#define RED     true
 #define CAST_RBTREEBASENODE(x) ((struct RBTreeBaseNode * ) (x))
 
 struct RBTreeBaseNode {
-    int id;
-    int key;
+    uint64_t key;
     bool color;
     void * left, * right, * parent;
 };
@@ -18,11 +17,12 @@ struct RBTreeBaseNode {
 struct RBTree {
     uint32_t count;
     void * root;
+    void * nil;
     void * leftmost;
 };
 
 void initializeRBTree(struct RBTree * rbtree);
-uint32_t getRBTreeCount(struct RBTree * rbtree);
 void insertRBTree(struct RBTree * rbtree, void * _item);
+void deleteRBTree(struct RBTree * rbtree, void * _item);
 
-#endif
+#endif // RBTREE_HEADER
