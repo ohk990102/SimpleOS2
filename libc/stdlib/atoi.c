@@ -8,7 +8,7 @@ int atoi(const char * c) {
         if( *c == '-' ) sign = -1;
         c++;
     }
-    while ('0' <= *c && *c <= '9'))
+    while ('0' <= *c && *c <= '9')
     {
         value *= 10;
         value += (int) (*c-'0');
