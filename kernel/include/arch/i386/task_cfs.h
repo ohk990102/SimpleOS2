@@ -12,7 +12,7 @@
 #define TASK_STACKPOOLADDRESS   0xC1000000
 #define TASK_STACKSIZE          8192
 
-#define TASK_INVALIDID          5
+#define TASK_INVALIDID          0xFFFFFFFF
 
 
 struct __attribute__((__packed__)) context_t{
