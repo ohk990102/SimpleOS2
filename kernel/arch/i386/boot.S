@@ -98,7 +98,7 @@ multiboot_entry:
 
     mov     edi, offset (tcb_pool_page_table - 0xC0000000)
     mov     esi, offset (tcb_pool - 0xC0000000)
-    mov     ecx, 24
+    mov     ecx, 48
 7:
     mov     edx, esi
     or      edx,  0x0003
@@ -147,7 +147,7 @@ stack:
 
 .section .TCBPool, "aw", @nobits
 tcb_pool:
-.skip 0x24000
+.skip 0x48000
 .section .StackPool, "aw", @nobits
 stack_pool:
 .skip 0x800000

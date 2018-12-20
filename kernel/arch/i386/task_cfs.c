@@ -193,6 +193,8 @@ bool scheduleInInterrupt(struct registers_t * r) {
     runningTask = cfsScheduler.runningTask;
     runningTask->link.key += NICE_0_LOAD * (cfsScheduler.timeslice - cfsScheduler.processorTime) / prio_to_weight[runningTask->nice + 20];
 
+    copyRegistersToContext(&(runningTask->context), r, false);
+
     addTaskToRunQueue(runningTask);
 
     uint64_t period = sysctl_sched_latency;
@@ -214,8 +216,9 @@ bool scheduleInInterrupt(struct registers_t * r) {
     cfsScheduler.timeslice = slice;
 
     cfsScheduler.runningTask = nextTask;
+    copyContextToRegisters(r, &(nextTask->context), false);
 
-    switch_context(&(runningTask->context), &(nextTask->context));
+    switch_context(0, &(nextTask->context));
 }
 void decreaseProcessorTime() {
     if(cfsScheduler.processorTime > 0)
